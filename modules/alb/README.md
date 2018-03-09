@@ -8,7 +8,7 @@ This module creates an ALB and DNS record for the provided hostname in Route 53.
 ## Usage
 ```
 module "alb" {
-  source = "terraform-aws-modules/ecs/aws//modules/alb"
+  source = "anrim/ecs/aws//modules/alb"
 
   name            = "app-dev"
   host_name       = "app"
