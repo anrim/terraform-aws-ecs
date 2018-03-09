@@ -38,7 +38,7 @@ EOF
 }
 
 module "ecs_service_app" {
-  source = "terraform-aws-modules/ecs/aws//modules/service"
+  source = "anrim/ecs/aws//modules/service"
 
   name = "app-dev"
 

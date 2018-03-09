@@ -26,7 +26,7 @@ module "vpc" {
 }
 
 module "ecs_cluster" {
-  source = "terraform-aws-modules/ecs/aws//modules/cluster"
+  source = "anrim/ecs/aws//modules/cluster"
 
   name = "app-dev"
   vpc_azs     = ["us-east-1a", "us-east-1b", "us-east-1c"]
@@ -39,7 +39,7 @@ module "ecs_cluster" {
 }
 
 module "alb" {
-  source = "terraform-aws-modules/ecs/aws//modules/alb"
+  source = "anrim/ecs/aws//modules/alb"
 
   name            = "app-dev"
   host_name       = "app"
@@ -82,7 +82,7 @@ EOF
 }
 
 module "ecs_service_app" {
-  source = "terraform-aws-modules/ecs/aws//modules/service"
+  source = "anrim/ecs/aws//modules/service"
 
   name = "app-dev"
   alb_target_group_arn = "${module.alb.target_group_arn}"

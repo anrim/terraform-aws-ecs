@@ -14,7 +14,7 @@ Creates an auto-scaling ECS cluster using the latest ECS-optimized AMI.
 ## Usage
 ```
 module "ecs_cluster" {
-  source = "terraform-aws-modules/ecs/aws//modules/cluster"
+  source = "anrim/ecs/aws//modules/cluster"
 
   name = "app-dev"
 
