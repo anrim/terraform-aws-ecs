@@ -1,3 +1,7 @@
+terraform {
+  required_version = ">= 0.11"
+}
+
 resource "aws_security_group_rule" "instance_in_alb" {
   type                     = "ingress"
   from_port                = 32768

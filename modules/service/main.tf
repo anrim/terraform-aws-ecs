@@ -1,3 +1,7 @@
+terraform {
+  required_version = ">= 0.11"
+}
+
 resource "aws_iam_role" "svc" {
   name = "${var.name}-ecs-role"
 
