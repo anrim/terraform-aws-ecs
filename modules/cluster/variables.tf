@@ -47,11 +47,6 @@ variable "tags" {
   default     = {}
 }
 
-variable "vpc_azs" {
-  description = "List of VPC availability zones to put instances in"
-  default     = []
-}
-
 variable "vpc_id" {
   description = "VPC ID to create cluster in"
 }

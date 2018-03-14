@@ -136,7 +136,7 @@ resource "aws_launch_configuration" "instance" {
   iam_instance_profile = "${aws_iam_instance_profile.instance.name}"
   user_data            = "${data.template_file.user_data.rendered}"
   security_groups      = ["${aws_security_group.instance.id}"]
-  key_name             = "${var.instance_keypair != "" ? var.instance_keypair : aws_key_pair.user.key_name}"
+  key_name             = "${var.instance_keypair != "" ? var.instance_keypair : element(concat(aws_key_pair.user.*.key_name, list("")), 0)}"
 
   root_block_device {
     volume_size = "${var.instance_root_volume_size}"

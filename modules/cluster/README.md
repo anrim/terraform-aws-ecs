@@ -7,7 +7,7 @@ Creates an auto-scaling ECS cluster using the latest ECS-optimized AMI.
 * [x] Stream instance logs to CloudWatch Logs (default log group name is var.name)
 * [x] Reclaim unused disk space for Docker
 * [x] Add additional user data
-* [x] Optional key pair variable. Default is to use '~/.ssh/id_rsa.pub'.
+* [x] Optional key pair. A new key pair with name=${var.name} using the public key '~/.ssh/id_rsa.pub' is created by default.
 * [ ] Auto-scaling tasks (CloudWatch metrics + app auto-scaling)
 * [ ] Service Discovery using Route 53 (awsvpc networking)
 
