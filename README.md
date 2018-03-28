@@ -10,7 +10,8 @@
 ## Usage
 ```
 module "vpc" {
-  source = "terraform-aws-modules/vpc/aws"
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "~> 1.26.0"
 
   name               = "app-dev"
   cidr               = "10.10.10.0/24"
