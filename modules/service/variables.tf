@@ -15,6 +15,16 @@ variable "container_port" {
   default     = 80
 }
 
+variable "deployment_maximum_percent" {
+  description = "The maximum percent of desired tasks that are allowed during a deployment"
+  default     = 200
+}
+
+variable "deployment_minimum_healthy_percent" {
+  description = "The minimum percent of desired tasks that must remain healthy during a deplyment"
+  default     = 100
+}
+
 variable "desired_count" {
   description = "Desired count of the ECS task"
   default     = 1
