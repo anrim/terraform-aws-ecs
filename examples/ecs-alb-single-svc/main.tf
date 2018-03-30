@@ -24,7 +24,6 @@ module "ecs_cluster" {
   source = "anrim/ecs/aws//modules/cluster"
 
   name        = "ecs-alb-single-svc"
-  vpc_azs     = ["us-east-1a", "us-east-1b", "us-east-1c"]
   vpc_id      = "${module.vpc.vpc_id}"
   vpc_subnets = ["${module.vpc.private_subnets}"]
 

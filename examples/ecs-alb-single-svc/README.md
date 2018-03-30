@@ -3,7 +3,7 @@ A simple example that demonstrates how to create an ECS cluster, ALB & ECS servi
 
 ## Pre-requisites
 1. Public zone in Route 53 (ex. domain_name=example.com)
-2. SSL Certificate issued using Amazon Certificate Manager (ex. CN=app.example.com)
+2. SSL Certificate issued using Amazon Certificate Manager (ex. certificate_arn=...)
 
 ## Usage
 ```
