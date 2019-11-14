@@ -131,7 +131,7 @@ resource "aws_key_pair" "user" {
 
 resource "aws_launch_configuration" "instance" {
   name_prefix          = "${var.name}-lc"
-  image_id             = "${data.aws_ami.ecs.id}"
+  image_id             = "${var.image_id != "" ? var.image_id : data.aws_ami.ecs.id}"
   instance_type        = "${var.instance_type}"
   iam_instance_profile = "${aws_iam_instance_profile.instance.name}"
   user_data            = "${data.template_file.user_data.rendered}"

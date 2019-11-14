@@ -18,6 +18,11 @@ variable "asg_desired_size" {
   default     = 1
 }
 
+variable "image_id" {
+  description = "AMI image_id for ECS instance"
+  default     = ""
+}
+
 variable "instance_keypair" {
   description = "Instance keypair name"
   default     = ""
