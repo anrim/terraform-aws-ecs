@@ -1,9 +1,9 @@
 # AWS ECS Terraform Module
 
 ## Features
-* [x] Create an ECS cluster using the [cluster](https://github.com/terraform-aws-modules/terraform-aws-ecs/tree/master/modules/cluster) sub-module
-* [x] Create an ALB using the [alb](https://github.com/terraform-aws-modules/terraform-aws-ecs/tree/master/modules/alb) sub-module
-* [x] Create an ECS service using the [service](https://github.com/terraform-aws-modules/terraform-aws-ecs/tree/master/modules/service) sub-module
+* [x] Create an ECS cluster using the [cluster](https://github.com/anrim/terraform-aws-ecs/tree/master/modules/cluster) sub-module
+* [x] Create an ALB using the [alb](https://github.com/anrim/terraform-aws-ecs/tree/master/modules/alb) sub-module
+* [x] Create an ECS service using the [service](https://github.com/anrim/terraform-aws-ecs/tree/master/modules/service) sub-module
 * [ ] Support [awsvpc](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-networking.html) task networking mode for simple service discovery between services using Route 53
 * [ ] Support [Fargate](https://aws.amazon.com/fargate/) (managed ECS cluster, run containers without having to manage an ECS cluster)
 
@@ -99,7 +99,7 @@ module "ecs_service_app" {
 ```
 
 ## Examples
-* [ECS cluster with a single ALB and service (Nginx)](https://github.com/terraform-aws-modules/terraform-aws-ecs/tree/master/examples/ecs-alb-single-svc)
+* [ECS cluster with a single ALB and service (Nginx)](https://github.com/anrim/terraform-aws-ecs/tree/master/examples/ecs-alb-single-svc)
 
 ## License
 Apache 2 Licensed. See LICENSE for full details.
