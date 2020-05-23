@@ -1,7 +1,3 @@
-terraform {
-  required_version = ">= 0.11"
-}
-
 resource "aws_ecs_cluster" "ecs" {
   name = var.name
 }
