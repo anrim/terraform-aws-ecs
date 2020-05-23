@@ -60,3 +60,4 @@ variable "vpc_subnets" {
   description = "List of VPC subnets to put instances in"
   default     = []
 }
+
