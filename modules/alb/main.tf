@@ -63,7 +63,7 @@ module "alb" {
 
   target_groups = [
     {
-      name_prefix      = "default"
+      name_prefix      = "h1"
       backend_protocol     = var.backend_protocol
       backend_port         = var.backend_port
       target_type      = "instance"
