@@ -53,7 +53,7 @@ module "acm" {
 
 module "alb" {
   source  = "terraform-aws-modules/alb/aws"
-  version = "~> 5.6.0"
+  version = "~> 5.2.0"
 
   name = "${var.name}-${random_pet.this.id}"
   load_balancer_type = "application"
@@ -61,19 +61,13 @@ module "alb" {
   security_groups = [module.alb_sg_https.this_security_group_id]
   subnets = var.vpc_subnets
 
-  //  # See notes in README (ref: https://github.com/terraform-providers/terraform-provider-aws/issues/7987)
-  //  access_logs = {
-  //    bucket = module.log_bucket.this_s3_bucket_id
-  //  }
-
-  http_tcp_listeners = [
-    # Forward action is default, either when defined or undefined
+  target_groups = [
     {
-      port               = 80
-      protocol           = "HTTP"
-      target_group_index = 0
-      # action_type        = "forward"
-    },
+      name_prefix      = "default"
+      backend_protocol     = var.backend_protocol
+      backend_port         = var.backend_port
+      target_type      = "instance"
+    }
   ]
 
   https_listeners = [
@@ -82,31 +76,16 @@ module "alb" {
       protocol           = "HTTPS"
       certificate_arn    = module.acm.this_acm_certificate_arn
       target_group_index = 0
-    },
+    }
   ]
 
-  target_groups = [
+  http_tcp_listeners = [
     {
-      name_prefix          = "h1"
-      backend_protocol     = var.backend_protocol
-      backend_port         = var.backend_port
-      target_type          = "instance"
-      deregistration_delay = 10
-      health_check = {
-        enabled             = true
-        interval            = 30
-        path                = "/healthz"
-        port                = "traffic-port"
-        healthy_threshold   = 3
-        unhealthy_threshold = 3
-        timeout             = 6
-        protocol            = "HTTP"
-        matcher             = "200-399"
-      }
-    },
+      port               = 80
+      protocol           = "HTTP"
+      target_group_index = 0
+    }
   ]
 
   tags    = var.tags
-  lb_tags = var.tags
-  target_group_tags = var.tags
 }
