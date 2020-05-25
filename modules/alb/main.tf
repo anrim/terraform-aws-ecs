@@ -25,6 +25,24 @@ module "alb_sg_https" {
   tags = var.tags
 }
 
+data "aws_route53_zone" "domain" {
+  name         = "${var.domain_name}."
+  private_zone = var.private_zone
+}
+
+resource "aws_route53_record" "hostname" {
+  zone_id = data.aws_route53_zone.domain.zone_id
+  name    = var.host_name != "" ? format("%s.%s", var.host_name, data.aws_route53_zone.domain.name) : format("%s", data.aws_route53_zone.domain.name)
+  type    = "A"
+
+  alias {
+    name                   = module.alb.this_lb_dns_name
+    zone_id                = module.alb.this_lb_zone_id
+    evaluate_target_health = true
+  }
+}
+
+
 module "acm" {
   source  = "terraform-aws-modules/acm/aws"
   version = "~> 2.0"
@@ -92,21 +110,3 @@ module "alb" {
   lb_tags = var.tags
   target_group_tags = var.tags
 }
-
-data "aws_route53_zone" "domain" {
-  name         = "${var.domain_name}."
-  private_zone = var.private_zone
-}
-
-resource "aws_route53_record" "hostname" {
-  zone_id = data.aws_route53_zone.domain.zone_id
-  name    = var.host_name != "" ? format("%s.%s", var.host_name, data.aws_route53_zone.domain.name) : format("%s", data.aws_route53_zone.domain.name)
-  type    = "A"
-
-  alias {
-    name                   = module.alb.this_lb_dns_name
-    zone_id                = module.alb.this_lb_zone_id
-    evaluate_target_health = true
-  }
-}
-
