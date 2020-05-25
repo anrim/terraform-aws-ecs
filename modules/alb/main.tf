@@ -9,7 +9,7 @@ resource "aws_security_group_rule" "instance_in_alb" {
 
 module "alb_sg_https" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 1.20.0"
+  version = "~> 3.10.0"
 
   name   = "${var.name}-alb"
   vpc_id = var.vpc_id
@@ -33,7 +33,7 @@ module "alb_sg_https" {
 
 module "alb" {
   source  = "terraform-aws-modules/alb/aws"
-  version = "~> 2.5.0"
+  version = "~> 5.6.0"
 
   alb_is_internal     = var.internal
   alb_name            = var.name
