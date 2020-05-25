@@ -1,3 +1,7 @@
+resource "random_pet" "this" {
+  length = 2
+}
+
 resource "aws_security_group_rule" "instance_in_alb" {
   type                     = "ingress"
   from_port                = 32768
@@ -9,59 +13,84 @@ resource "aws_security_group_rule" "instance_in_alb" {
 
 module "alb_sg_https" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 3.10.0"
+  version = "~> 3.0"
 
-  name   = "${var.name}-alb"
-  vpc_id = var.vpc_id
+  name        = "alb-sg-${random_pet.this.id}"
+  description = "Security group for example usage with ALB"
+  vpc_id  = var.vpc_id
 
-  ingress_with_cidr_blocks = [
-    {
-      rule        = "https-443-tcp"
-      cidr_blocks = "0.0.0.0/0"
-    },
-  ]
-
-  egress_with_cidr_blocks = [
-    {
-      rule        = "all-tcp"
-      cidr_blocks = "0.0.0.0/0"
-    },
-  ]
-
+  ingress_cidr_blocks = ["0.0.0.0/0"]
+  ingress_rules       = ["http-80-tcp", "all-icmp"]
+  egress_rules        = ["all-all"]
   tags = var.tags
+}
+
+module "acm" {
+  source  = "terraform-aws-modules/acm/aws"
+  version = "~> 2.0"
+
+  domain_name = var.domain_name # trimsuffix(data.aws_route53_zone.domain.name, ".") # Terraform >= 0.12.17
+  zone_id     = data.aws_route53_zone.domain.id
 }
 
 module "alb" {
   source  = "terraform-aws-modules/alb/aws"
   version = "~> 5.6.0"
 
-  alb_is_internal     = var.internal
-  alb_name            = var.name
-  alb_protocols       = ["HTTPS"]
-  alb_security_groups = [module.alb_sg_https.this_security_group_id]
-
-  backend_port     = var.backend_port
-  backend_protocol = var.backend_protocol
-
-  certificate_arn = var.certificate_arn
-
-  health_check_healthy_threshold   = var.health_check_healthy_threshold
-  health_check_interval            = var.health_check_interval
-  health_check_matcher             = var.health_check_matcher
-  health_check_path                = var.health_check_path
-  health_check_port                = var.health_check_port
-  health_check_timeout             = var.health_check_timeout
-  health_check_unhealthy_threshold = var.health_check_unhealthy_threshold
-
-  create_log_bucket        = var.create_log_bucket
-  enable_logging           = var.enable_logging
-  force_destroy_log_bucket = var.force_destroy_log_bucket
-  log_bucket_name          = var.log_bucket_name != "" ? var.log_bucket_name : format("%s-logs", var.name)
-  log_location_prefix      = "alb"
-
-  subnets = var.vpc_subnets
-  tags    = var.tags
+  name = "${var.name}-${random_pet.this.id}"
+  load_balancer_type = "application"
   vpc_id  = var.vpc_id
+  security_groups = [module.alb_sg_https.this_security_group_id]
+  subnets = var.vpc_subnets
+
+  //  # See notes in README (ref: https://github.com/terraform-providers/terraform-provider-aws/issues/7987)
+  //  access_logs = {
+  //    bucket = module.log_bucket.this_s3_bucket_id
+  //  }
+
+  http_tcp_listeners = [
+    # Forward action is default, either when defined or undefined
+    {
+      port               = 80
+      protocol           = "HTTP"
+      target_group_index = 0
+      # action_type        = "forward"
+    },
+  ]
+
+  https_listeners = [
+    {
+      port               = 443
+      protocol           = "HTTPS"
+      certificate_arn    = module.acm.this_acm_certificate_arn
+      target_group_index = 1
+    },
+  ]
+
+  target_groups = [
+    {
+      name_prefix          = "h1"
+      backend_protocol     = var.backend_protocol
+      backend_port         = var.backend_port
+      target_type          = "instance"
+      deregistration_delay = 10
+      health_check = {
+        enabled             = true
+        interval            = 30
+        path                = "/healthz"
+        port                = "traffic-port"
+        healthy_threshold   = 3
+        unhealthy_threshold = 3
+        timeout             = 6
+        protocol            = "HTTP"
+        matcher             = "200-399"
+      }
+    },
+  ]
+
+  tags    = var.tags
+  lb_tags = var.tags
+  target_group_tags = var.tags
 }
 
 data "aws_route53_zone" "domain" {
@@ -75,8 +104,8 @@ resource "aws_route53_record" "hostname" {
   type    = "A"
 
   alias {
-    name                   = module.alb.alb_dns_name
-    zone_id                = module.alb.alb_zone_id
+    name                   = module.alb.this_lb_dns_name
+    zone_id                = module.alb.this_lb_zone_id
     evaluate_target_health = true
   }
 }
