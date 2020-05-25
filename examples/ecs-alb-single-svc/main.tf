@@ -24,8 +24,8 @@ module "ecs_cluster" {
   source = "anrim/ecs/aws//modules/cluster"
 
   name        = "ecs-alb-single-svc"
-  vpc_id      = "${module.vpc.vpc_id}"
-  vpc_subnets = ["${module.vpc.private_subnets}"]
+  vpc_id      = module.vpc.vpc_id
+  vpc_subnets = [module.vpc.private_subnets]
 
   tags = {
     Owner       = "user"
@@ -40,7 +40,7 @@ module "alb" {
   host_name                = "app"
   domain_name              = "example.com"
   certificate_arn          = "arn:aws:iam::123456789012:server-certificate/test_cert-123456789012"
-  backend_sg_id            = "${module.ecs_cluster.instance_sg_id}"
+  backend_sg_id            = module.ecs_cluster.instance_sg_id
   create_log_bucket        = true
   enable_logging           = true
   force_destroy_log_bucket = true
@@ -51,8 +51,8 @@ module "alb" {
     Environment = "me"
   }
 
-  vpc_id      = "${module.vpc.vpc_id}"
-  vpc_subnets = ["${module.vpc.public_subnets}"]
+  vpc_id      = module.vpc.vpc_id
+  vpc_subnets = [module.vpc.public_subnets]
 }
 
 resource "aws_ecs_task_definition" "app" {
@@ -81,21 +81,23 @@ resource "aws_ecs_task_definition" "app" {
   }
 ]
 EOF
+
 }
 
 module "ecs_service_app" {
   source = "anrim/ecs/aws//modules/service"
 
   name                 = "ecs-alb-single-svc"
-  alb_target_group_arn = "${module.alb.target_group_arn}"
-  cluster              = "${module.ecs_cluster.cluster_id}"
+  alb_target_group_arn = module.alb.target_group_arn
+  cluster              = module.ecs_cluster.cluster_id
   container_name       = "nginx"
   container_port       = "80"
   log_groups           = ["ecs-alb-single-svc-nginx"]
-  task_definition_arn  = "${aws_ecs_task_definition.app.arn}"
+  task_definition_arn  = aws_ecs_task_definition.app.arn
 
   tags = {
     Owner       = "user"
     Environment = "me"
   }
 }
+
